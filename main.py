@@ -2,7 +2,6 @@ import cv2
 import csv
 import os
 import webbrowser
-# import datetime
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -10,6 +9,8 @@ from tabulate import tabulate
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
+from tkinter import *
+from PIL import Image,ImageTk
 
 def sendmail(text, html, data, subject, header):
     me = 'coolconnex901@gmail.com'
@@ -67,6 +68,7 @@ def maillist():
     subject="Items in your fridge"
     sendmail(text,html,data,subject,header)
     print("=>  Mail Sent  <=")
+    canvas.create_text(200,700,text="=>  Mail Sent  <=",fill="white",font=("Helvetica",15),tags="text")
 
 
 def alert():
@@ -108,9 +110,11 @@ def alert():
         header = ["Item Name","Date of Expiry"]
         sendmail(text, html, data, subject, header)
         print("=>  Alert Sent  <=")
+        canvas.create_text(200,700,text="=>  Alert Sent  <=",fill="white",font=("Helvetica",15),tags="text")
         #prevdate=date.today()
     else:
         print("Your Fridge is Fresh!")
+        canvas.create_text(200,700,text="Your Fridge is Fresh!",fill="white",font=("Helvetica",15),tags="text")
 
 def insert():
     #recognition
@@ -149,6 +153,7 @@ def insert():
                     prev = 'person'
                     if(classNames[classId-1]!=prev and (classNames[classId-1]=='banana' or classNames[classId-1]=='apple' or classNames[classId-1]=='orange' or classNames[classId-1]=='broccoli' or classNames[classId-1]=='tomato' or classNames[classId-1]=='carrot')):
                         print("added",classNames[classId-1],"list updated")
+                        canvas.create_text(200,700,text="added"+" "+classNames[classId-1]+"...."+"list updated!",fill="white",font=("Helvetica",15),tags="text")
                         prev = classNames[classId-1]
                         with open('items_list.csv', mode='a',newline='') as items_list:
                             #to avoid extra line gaps
@@ -240,6 +245,7 @@ def delete():
                             for idx in range(len(data)):
                                 if(data[idx][0]==classNames[classId-1]):
                                       print("deleted",data[idx][0],"inserted on",data[idx][1])
+                                      canvas.create_text(250,700,text="deleted"+" "+data[idx][0]+" "+"inserted on"+" "+data[idx][1],fill="white",font=("Helvetica",15),tags="text")
                                       data.remove(data[idx])
                                       break 
                             with open('items_list.csv', 'w', newline='') as writeFile:
@@ -258,7 +264,7 @@ def delete():
             cv2.waitKey(1)
 
 #main code
-k = input("Enter your choice\n \ti to insert\td to delete\tm to mail\ta to alert\ts to stop\n")
+"""k = input("Enter your choice\n \ti to insert\td to delete\tm to mail\ta to alert\ts to stop\n")
 if(k=='i'):
     while(k=='i'):
         insert()
@@ -272,4 +278,36 @@ elif(k=='d'):
         delete()
         k = input("Enter your choice\n\td to insert\ts to stop\n")
 else:
-    exit(0)
+    exit(0)"""
+root=Tk()
+root.geometry("1200x900")
+
+
+bg_image=Image.open("E:\\CoolConnex\\refrigrator.jpg")
+bg_photo=ImageTk.PhotoImage(bg_image)
+
+
+canvas=Canvas(root,width=1200,height=900)
+canvas.pack()
+
+
+canvas.create_image(0,0,image=bg_photo,anchor="nw")
+
+
+b1=Button(canvas,text="insert",fg="white",bg="green",command=insert,width=15,height=5,relief="sunken",font=("Helvetica",10))
+b2=Button(canvas,text="delete",fg="white",bg="red",command=delete,width=15,height=5,relief="sunken",font=("Helvetica",10))
+b3=Button(canvas,text="send mail",bg="yellow",command=maillist,width=15,height=5,relief="sunken",font=("Helvetica",10))
+b4=Button(canvas,text="items to expire",fg="white",bg="blue",command=alert,width=15,height=5,relief="sunken",font=("Helvetica",10))
+b5=Button(canvas,text="exit",command=exit,width=45,height=3,relief="sunken",font=("Helvetica",9))
+
+
+
+root.grid_rowconfigure(0,weight=1)
+root.grid_columnconfigure(0,weight=1)
+txt=canvas.create_text(250,220,text="Select an option given below",fill="white",font=("Helvetica",15),tags="text")
+b1_window = canvas.create_window(100, 300, anchor="nw", window=b1)
+b2_window = canvas.create_window(300, 300, anchor="nw", window=b2)
+b3_window = canvas.create_window(100, 400, anchor="nw", window=b3)
+b4_window = canvas.create_window(300, 400, anchor="nw", window=b4)
+b5_window = canvas.create_window(100, 500, anchor="nw", window=b5)
+root.mainloop()
